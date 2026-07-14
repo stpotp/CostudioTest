@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoStudio - Premium AI Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 70%);
+        }
+
+        /* Luxury Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-full);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+            transform: rotate(15deg);
+        }
+
+        .theme-toggle svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* Main Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            flex: 1;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        .new-chat-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            width: 100%;
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .new-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg), 0 0 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .new-chat-btn:active {
+            transform: translateY(0);
+        }
+
+        .new-chat-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Sessions List */
+        .sessions-section {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sessions-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 0.5rem 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sessions-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sessions-count {
+            background: var(--bg-tertiary);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .sessions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .session-item {
+            background: var(--bg-tertiary);
+            border: 1px solid transparent;
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .session-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 0;
+        }
+
+        .session-item:hover {
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .session-item:hover::before {
+            opacity: 0.05;
+        }
+
+        .session-item.active {
+            background: var(--bg-secondary);
+            border-color: var(--primary);
+        }
+
+        .session-content {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .session-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .session-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .session-actions {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .session-item:hover .session-actions {
+            opacity: 1;
+        }
+
+        .session-delete {
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .session-delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .session-delete svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+        }
+
+        /* Chat Area */
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: var(--bg-tertiary);
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chat-title svg {
+            width: 24px;
+            height: 24px;
+            color: var(--primary-light);
+        }
+
+        .chat-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toolbar-btn {
+            background: transparent;
+            border: none;
+            padding: 0.625rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .toolbar-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .toolbar-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Messages Container */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 1rem;
+            max-width: 85%;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .avatar.user {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .avatar.ai {
+            background: linear-gradient(135deg, var(--accent), #d97706);
+            color: white;
+        }
+
+        .message-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .message-bubble {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            position: relative;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .message-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-text {
+            color: white;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            padding: 0 0.5rem;
+        }
+
+        .message.user .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.5rem;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-muted);
+            border-radius: var(--radius-full);
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            30% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
+        }
+
+        .message.user .typing-dot {
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Input Area */
+        .input-area {
+            background: var(--bg-tertiary);
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+        }
+
+        .input-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-wrapper {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .chat-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            resize: none;
+            max-height: 120px;
+            line-height: 1.5;
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .chat-input:focus {
+            outline: none;
+        }
+
+        .input-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .action-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-lg);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .send-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .welcome-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-xl), 0 0 40px rgba(99, 102, 241, 0.3);
+        }
+
+        .welcome-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.75rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 400px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .quick-action {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-lg);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quick-action:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-color: var(--primary);
+        }
+
+        .quick-action svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--bg-tertiary);
+            border-top-color: var(--primary);
+            border-radius: var(--radius-full);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-lg);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: var(--shadow-xl);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--danger);
+        }
+
+        .toast-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .toast.success .toast-icon {
+            color: var(--success);
+        }
+
+        .toast.error .toast-icon {
+            color: var(--danger);
+        }
+
+        /* Model Selector Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease-out;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .modal-close svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .model-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .model-item {
+            background: var(--bg-tertiary);
+            border: 1px solid transparent;
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .model-item:hover {
+            border-color: var(--primary);
+        }
+
+        .model-item.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .model-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .model-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .model-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .model-description {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .model-check {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .model-item.selected .model-check {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .model-check svg {
+            width: 14px;
+            height: 14px;
+            color: white;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .model-item.selected .model-check svg {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem 0;
+            }
+
+            .logo-text {
+                font-size: 1.5rem;
+            }
+
+            .main-content {
+                gap: 1.5rem;
+            }
+
+            .sidebar {
+                padding: 1rem;
+            }
+
+            .new-chat-btn {
+                padding: 0.875rem;
+                font-size: 0.9rem;
+            }
+
+            .chat-header {
+                padding: 1rem;
+            }
+
+            .chat-title {
+                font-size: 1rem;
+            }
+
+            .messages {
+                padding: 1rem;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+
+            .input-area {
+                padding: 1rem;
+            }
+
+            .welcome-screen {
+                padding: 2rem 1rem;
+            }
+
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Premium Effects */
+        .glass-effect {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Custom Scrollbar for messages */
+        .messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .messages::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: var(--radius-full);
+        }
+
+        .messages::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Model Selector Modal -->
+    <div class="modal-overlay" id="modelModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Select AI Model</h3>
+                <button class="modal-close" id="closeModelModal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="model-list" id="modelList">
+                <div class="model-item selected" data-model="gpt-4">
+                    <div class="model-icon" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">G4</div>
+                    <div class="model-info">
+                        <div class="model-name">GPT-4</div>
+                        <div class="model-description">Most advanced model with reasoning capabilities</div>
+                    </div>
+                    <div class="model-check">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="model-item" data-model="gpt-3.5">
+                    <div class="model-icon" style="background: linear-gradient(135deg, #10b981, #059669);">G3</div>
+                    <div class="model-info">
+                        <div class="model-name">GPT-3.5 Turbo</div>
+                        <div class="model-description">Fast and cost-effective for most tasks</div>
+                    </div>
+                    <div class="model-check">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="model-item" data-model="claude-3">
+                    <div class="model-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">C3</div>
+                    <div class="model-info">
+                        <div class="model-name">Claude 3</div>
+                        <div class="model-description">Excellent at complex reasoning and coding</div>
+                    </div>
+                    <div class="model-check">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="model-item" data-model="gemini">
+                    <div class="model-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">GEM</div>
+                    <div class="model-info">
+                        <div class="model-name">Gemini</div>
+                        <div class="model-description">Google's multimodal AI model</div>
+                    </div>
+                    <div class="model-check">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">CS</div>
+                <span class="logo-text">CoStudio</span>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                </button>
+                <button class="toolbar-btn" id="settingsBtn" title="Settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <button class="new-chat-btn" id="newChatBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    New Chat
+                </button>
+                
+                <div class="sessions-section">
+                    <div class="sessions-header">
+                        <span class="sessions-title">Recent Chats</span>
+                        <span class="sessions-count" id="sessionsCount">0</span>
+                    </div>
+                    <div class="sessions-list" id="sessionsList">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            <p>No conversations yet</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <div class="chat-header">
+                    <h2 class="chat-title" id="chatTitle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <span id="currentChatTitle">New Chat</span>
+                    </h2>
+                    <div class="chat-toolbar">
+                        <button class="toolbar-btn" id="modelSelectBtn" title="Change Model">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </button>
+                        <button class="toolbar-btn" id="clearChatBtn" title="Clear Chat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="messages" id="messages">
+                    <div class="welcome-screen" id="welcomeScreen">
+                        <div class="welcome-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </div>
+                        <h1 class="welcome-title">Welcome to CoStudio</h1>
+                        <p class="welcome-subtitle">Start a conversation with our advanced AI assistant. Ask anything, get intelligent responses.</p>
+                        <div class="quick-actions">
+                            <button class="quick-action" onclick="startQuickChat('Explain quantum computing to me')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9.5 2c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5z"/>
+                                    <path d="M12 7v5l3 3"/>
+                                </svg>
+                                Explain concepts
+                            </button>
+                            <button class="quick-action" onclick="startQuickChat('Write a Python script for data analysis')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/>
+                                </svg>
+                                Generate code
+                            </button>
+                            <button class="quick-action" onclick="startQuickChat('Help me brainstorm startup ideas')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9.5 2c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5z"/>
+                                    <path d="M12 7v5l3 3"/>
+                                </svg>
+                                Brainstorm ideas
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <div class="input-container">
+                        <div class="input-wrapper">
+                            <textarea 
+                                class="chat-input" 
+                                id="messageInput" 
+                                placeholder="Type your message here..." 
+                                rows="1"
+                                autofocus
+                            ></textarea>
+                        </div>
+                        <div class="input-actions">
+                            <button class="action-btn" id="attachBtn" title="Attach file">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="send-btn" id="sendBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                        Send
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            currentModel: 'gpt-4',
+            sessions: [],
+            currentSessionId: null,
+            isDarkMode: true,
+            messages: [],
+            quickReplies: [
+                "Explain quantum computing to me",
+                "Write a Python script for data analysis",
+                "Help me brainstorm startup ideas",
+                "What's the latest in AI research?",
+                "Create a marketing plan for my product"
+            ]
+        };
+
+        // DOM Elements
+        const elements = {
+            loadingOverlay: document.getElementById('loadingOverlay'),
+            toastContainer: document.getElementById('toastContainer'),
+            modelModal: document.getElementById('modelModal'),
+            closeModelModal: document.getElementById('closeModelModal'),
+            modelList: document.getElementById('modelList'),
+            themeToggle: document.getElementById('themeToggle'),
+            newChatBtn: document.getElementById('newChatBtn'),
+            sessionsList: document.getElementById('sessionsList'),
+            sessionsCount: document.getElementById('sessionsCount'),
+            chatTitle: document.getElementById('chatTitle'),
+            currentChatTitle: document.getElementById('currentChatTitle'),
+            messages: document.getElementById('messages'),
+            welcomeScreen: document.getElementById('welcomeScreen'),
+            messageInput: document.getElementById('messageInput'),
+            sendBtn: document.getElementById('sendBtn'),
+            attachBtn: document.getElementById('attachBtn'),
+            modelSelectBtn: document.getElementById('modelSelectBtn'),
+            clearChatBtn: document.getElementById('clearChatBtn'),
+            settingsBtn: document.getElementById('settingsBtn')
+        };
+
+        // Initialize
+        function init() {
+            loadFromStorage();
+            setupEventListeners();
+            renderSessions();
+            updateTheme();
+            autoResizeTextarea();
+        }
+
+        // Load from localStorage
+        function loadFromStorage() {
+            const saved = localStorage.getItem('costudio_data');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    CONFIG.sessions = data.sessions || [];
+                    CONFIG.currentSessionId = data.currentSessionId || null;
+                    CONFIG.currentModel = data.currentModel || 'gpt-4';
+                    CONFIG.isDarkMode = data.isDarkMode !== false;
+                    
+                    if (CONFIG.currentSessionId) {
+                        loadSession(CONFIG.currentSessionId);
+                    }
+                } catch (e) {
+                    console.error('Error loading data:', e);
+                }
+            }
+        }
+
+        // Save to localStorage
+        function saveToStorage() {
+            const data = {
+                sessions: CONFIG.sessions,
+                currentSessionId: CONFIG.currentSessionId,
+                currentModel: CONFIG.currentModel,
+                isDarkMode: CONFIG.isDarkMode
+            };
+            localStorage.setItem('costudio_data', JSON.stringify(data));
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Theme toggle
+            elements.themeToggle.addEventListener('click', toggleTheme);
+
+            // New chat
+            elements.newChatBtn.addEventListener('click', createNewChat);
+
+            // Send message
+            elements.sendBtn.addEventListener('click', sendMessage);
+            elements.messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Model selection
+            elements.modelSelectBtn.addEventListener('click', () => {
+                elements.modelModal.classList.add('active');
+            });
+            elements.closeModelModal.addEventListener('click', () => {
+                elements.modelModal.classList.remove('active');
+            });
+
+            // Model items
+            document.querySelectorAll('.model-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.model-item').forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                    CONFIG.currentModel = item.dataset.model;
+                    showToast(`Model switched to ${item.querySelector('.model-name').textContent}`, 'success');
+                    saveToStorage();
+                });
+            });
+
+            // Clear chat
+            elements.clearChatBtn.addEventListener('click', clearChat);
+
+            // Close modal on outside click
+            elements.modelModal.addEventListener('click', (e) => {
+                if (e.target === elements.modelModal) {
+                    elements.modelModal.classList.remove('active');
+                }
+            });
+
+            // Textarea auto-resize
+            elements.messageInput.addEventListener('input', autoResizeTextarea);
+
+            // Settings button
+            elements.settingsBtn.addEventListener('click', () => {
+                showToast('Settings coming soon!', 'success');
+            });
+        }
+
+        // Toggle Theme
+        function toggleTheme() {
+            CONFIG.isDarkMode = !CONFIG.isDarkMode;
+            updateTheme();
+            saveToStorage();
+        }
+
+        // Update Theme
+        function updateTheme() {
+            if (CONFIG.isDarkMode) {
+                document.body.classList.remove('light-mode');
+                elements.themeToggle.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                `;
+            } else {
+                document.body.classList.add('light-mode');
+                elements.themeToggle.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                    </svg>
+                `;
+            }
+        }
+
+        // Auto-resize textarea
+        function autoResizeTextarea() {
+            elements.messageInput.style.height = 'auto';
+            elements.messageInput.style.height = Math.min(elements.messageInput.scrollHeight, 120) + 'px';
+        }
+
+        // Create new chat
+        function createNewChat() {
+            const newSession = {
+                id: generateId(),
+                title: 'New Chat',
+                messages: [],
+                model: CONFIG.currentModel,
+                createdAt: new Date().toISOString()
+            };
+            
+            CONFIG.sessions.unshift(newSession);
+            CONFIG.currentSessionId = newSession.id;
+            
+            renderSessions();
+            loadSession(newSession.id);
+            saveToStorage();
+            
+            showToast('New chat created', 'success');
+        }
+
+        // Generate unique ID
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Render sessions
+        function renderSessions() {
+            elements.sessionsCount.textContent = CONFIG.sessions.length;
+            
+            if (CONFIG.sessions.length === 0) {
+                elements.sessionsList.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <p>No conversations yet</p>
+                    </div>
+                `;
+                return;
+            }
+
+            elements.sessionsList.innerHTML = CONFIG.sessions.map(session => `
+                <div class="session-item ${session.id === CONFIG.currentSessionId ? 'active' : ''}" 
+                     data-id="${session.id}"
+                     onclick="loadSession('${session.id}')">
+                    <div class="session-content">
+                        <div class="session-title">${escapeHtml(session.title)}</div>
+                        <div class="session-date">${formatDate(session.createdAt)}</div>
+                    </div>
+                    <div class="session-actions">
+                        <button class="session-delete" 
+                                onclick="event.stopPropagation(); deleteSession('${session.id}')"
+                                title="Delete session">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load session
+        function loadSession(sessionId) {
+            const session = CONFIG.sessions.find(s => s.id === sessionId);
+            if (!session) return;
+
+            CONFIG.currentSessionId = sessionId;
+            CONFIG.messages = session.messages;
+            CONFIG.currentModel = session.model;
+
+            renderMessages();
+            renderSessions();
+            updateChatTitle();
+            saveToStorage();
+
+            // Scroll to bottom
+            setTimeout(() => {
+                elements.messages.scrollTop = elements.messages.scrollHeight;
+            }, 100);
+        }
+
+        // Update chat title
+        function updateChatTitle() {
+            const session = CONFIG.sessions.find(s => s.id === CONFIG.currentSessionId);
+            if (session) {
+                elements.currentChatTitle.textContent = session.title;
+            }
+        }
+
+        // Delete session
+        function deleteSession(sessionId) {
+            if (CONFIG.sessions.length === 1) {
+                showToast('Cannot delete the last session', 'error');
+                return;
+            }
+
+            CONFIG.sessions = CONFIG.sessions.filter(s => s.id !== sessionId);
+            
+            if (CONFIG.currentSessionId === sessionId) {
+                CONFIG.currentSessionId = CONFIG.sessions[0].id;
+                loadSession(CONFIG.currentSessionId);
+            }
+
+            renderSessions();
+            saveToStorage();
+            showToast('Session deleted', 'success');
+        }
+
+        // Clear chat
+        function clearChat() {
+            if (!CONFIG.currentSessionId) return;
+
+            const session = CONFIG.sessions.find(s => s.id === CONFIG.currentSessionId);
+            if (session) {
+                session.messages = [];
+                CONFIG.messages = [];
+                renderMessages();
+                saveToStorage();
+                showToast('Chat cleared', 'success');
+            }
+        }
+
+        // Send message
+        async function sendMessage() {
+            const text = elements.messageInput.value.trim();
+            if (!text) return;
+
+            // Disable input
+            elements.messageInput.disabled = true;
+            elements.sendBtn.disabled = true;
+
+            // Add user message
+            const userMessage = {
+                id: generateId(),
+                role: 'user',
+                content: text,
+                timestamp: new Date().toISOString()
+            };
+
+            CONFIG.messages.push(userMessage);
+            renderMessages();
+            elements.messageInput.value = '';
+            autoResizeTextarea();
+
+            // Update session title if it's the first message
+            if (CONFIG.messages.length === 1) {
+                const session = CONFIG.sessions.find(s => s.id === CONFIG.currentSessionId);
+                if (session && session.title === 'New Chat') {
+                    session.title = text.substring(0, 30) + (text.length > 30 ? '...' : '');
+                    updateChatTitle();
+                    renderSessions();
+                    saveToStorage();
+                }
+            }
+
+            // Show typing indicator
+            const typingId = generateId();
+            CONFIG.messages.push({
+                id: typingId,
+                role: 'assistant',
+                content: '',
+                isTyping: true,
+                timestamp: new Date().toISOString()
+            });
+            renderMessages();
+            scrollToBottom();
+
+            // Simulate AI response (replace with actual API call)
+            try {
+                await simulateAIResponse(text);
+            } catch (error) {
+                showToast('Error getting response', 'error');
+            } finally {
+                // Remove typing indicator
+                CONFIG.messages = CONFIG.messages.filter(m => m.id !== typingId);
+                
+                // Re-enable input
+                elements.messageInput.disabled = false;
+                elements.sendBtn.disabled = false;
+                elements.messageInput.focus();
+            }
+
+            saveToStorage();
+        }
+
+        // Simulate AI response
+        async function simulateAIResponse(userMessage) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            const responses = [
+                "I understand your question. Let me provide a detailed response based on the latest information available.",
+                "That's an interesting query! Here's what I found after analyzing the data.",
+                "Great question! I'll break this down into simple, understandable parts for you.",
+                "Based on my knowledge cutoff in 2024, here's the most accurate information I can provide.",
+                "Let me help you with that. Here are the key points you should know."
+            ];
+
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+
+            const assistantMessage = {
+                id: generateId(),
+                role: 'assistant',
+                content: randomResponse,
+                timestamp: new Date().toISOString()
+            };
+
+            CONFIG.messages.push(assistantMessage);
+            renderMessages();
+            scrollToBottom();
+        }
+
+        // Render messages
+        function renderMessages() {
+            if (CONFIG.messages.length === 0) {
+                elements.messages.innerHTML = '';
+                elements.welcomeScreen.style.display = 'flex';
+                return;
+            }
+
+            elements.welcomeScreen.style.display = 'none';
+            
+            elements.messages.innerHTML = CONFIG.messages.map(message => {
+                const time = formatTime(message.timestamp);
+                
+                if (message.isTyping) {
+                    return `
+                        <div class="message ai">
+                            <div class="avatar ai">AI</div>
+                            <div class="message-content">
+                                <div class="message-bubble">
+                                    <div class="typing-indicator">
+                                        <div class="typing-dot"></div>
+                                        <div class="typing-dot"></div>
+                                        <div class="typing-dot"></div>
+                                    </div>
+                                </div>
+                                <span class="message-time">${time}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const isUser = message.role === 'user';
+                const avatarText = isUser ? 'YOU' : 'AI';
+                const avatarClass = isUser ? 'user' : 'ai';
+
+                return `
+                    <div class="message ${isUser ? 'user' : 'ai'}">
+                        <div class="avatar ${avatarClass}">${avatarText}</div>
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <div class="message-text">${escapeHtml(message.content)}</div>
+                            </div>
+                            <span class="message-time">${time}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            scrollToBottom();
+        }
+
+        // Scroll to bottom
+        function scrollToBottom() {
+            setTimeout(() => {
+                elements.messages.scrollTop = elements.messages.scrollHeight;
+            }, 100);
+        }
+
+        // Start quick chat
+        function startQuickChat(prompt) {
+            if (CONFIG.currentSessionId && CONFIG.messages.length > 0) {
+                createNewChat();
+            }
+            elements.messageInput.value = prompt;
+            autoResizeTextarea();
+            elements.messageInput.focus();
+            
+            // Small delay to ensure the input is focused
+            setTimeout(() => {
+                sendMessage();
+            }, 100);
+        }
+
+        // Show toast
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' 
+                ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>'
+                : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>';
+
+            toast.innerHTML = `
+                <div class="toast-icon">${icon}</div>
+                <span>${message}</span>
+            `;
+
+            elements.toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) {
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else if (diffDays === 1) {
+                return 'Yesterday';
+            } else if (diffDays < 7) {
+                return date.toLocaleDateString([], { weekday: 'short' });
+            } else {
+                return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+            }
+        }
+
+        // Format time
+        function formatTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', init);
+
+        // Make functions globally accessible
+        window.startQuickChat = startQuickChat;
+        window.loadSession = loadSession;
+        window.deleteSession = deleteSession;
+    </script>
+</body>
+</html>
